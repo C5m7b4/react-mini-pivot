@@ -1,9 +1,9 @@
-import { Row } from "../../../types";
-import { doesRowExist } from "../../../utils/arrayUtils";
-import { getDragAfterElement } from "../../../utils/dragUtils";
-import { ChevronDown } from "../Icons";
-import { useClickOutside } from "../hooks/useClickOutside";
-import { useEffect } from "react";
+import { Row } from '../../../types';
+import { doesRowExist } from '../../../utils/arrayUtils';
+import { getDragAfterElement } from '../../../utils/dragUtils';
+import { ChevronDown } from '../Icons';
+import { useClickOutside } from '../hooks/useClickOutside';
+import { useEffect } from 'react';
 
 export interface RowProps<T> {
   rows: Row<T>[];
@@ -13,63 +13,57 @@ export interface RowProps<T> {
 const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
   const ref = useClickOutside<HTMLDivElement>(() => {
     if (ref.current) {
-      ref.current.setAttribute("data-display", "closed");
+      ref.current.setAttribute('data-display', 'closed');
     }
   });
 
-  useEffect(() => {
-    console.log("rerendering because rows changed", rows);
-  }, [rows]);
+  useEffect(() => {}, [rows]);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    console.log("dropped on rows");
-
-    (e.target as HTMLDivElement).classList.remove("dragging");
-    const fieldType = e.dataTransfer.getData("fieldType");
+    (e.target as HTMLDivElement).classList.remove('dragging');
+    const fieldType = e.dataTransfer.getData('fieldType');
     const newRow: Row<T> = {
       label: fieldType as keyof T,
-      direction: "asc",
+      direction: 'asc',
     };
-    console.log("created a new row");
 
-    const isExisting = doesRowExist(rows, "label", fieldType);
-    console.log("isExisting", isExisting);
+    const isExisting = doesRowExist(rows, 'label', fieldType);
+
     if (isExisting.found) {
       const copy = rows.filter((r) => r.label != fieldType);
       const container = document.querySelector('[query-id="filtered-rows"]');
       const afterElement = getDragAfterElement(
         container as HTMLDivElement,
-        e.clientY
+        e.clientY,
       );
 
       if (afterElement) {
         const pos = rows.findIndex((r) => (r.label = afterElement.innerHTML));
         copy.splice(pos, 0, newRow);
-        console.log("setting rows, step 1");
+
         setRows(copy);
       }
     } else {
       const newRows = [...rows, newRow];
-      console.log("setting rows, step 2");
-      console.log(newRows);
+
       setRows(newRows);
     }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    (e.target as HTMLDivElement).style.border = "2px solid #00000";
-    e.dataTransfer.dropEffect = "move";
+    (e.target as HTMLDivElement).style.border = '2px solid #00000';
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
-    fieldType: Row<T>
+    fieldType: Row<T>,
   ) => {
-    e.dataTransfer.setData("fieldType", String(fieldType.label));
-    (e.target as HTMLDivElement).style.border = "1px solid #000";
-    (e.target as HTMLDivElement).style.opacity = "0.8";
-    (e.target as HTMLDivElement).classList.add("dragging");
+    e.dataTransfer.setData('fieldType', String(fieldType.label));
+    (e.target as HTMLDivElement).style.border = '1px solid #000';
+    (e.target as HTMLDivElement).style.opacity = '0.8';
+    (e.target as HTMLDivElement).classList.add('dragging');
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
@@ -79,28 +73,27 @@ const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
 
   const handleShowOptions = (
     e: React.MouseEvent<HTMLSpanElement>,
-    row: Row<T>
+    row: Row<T>,
   ) => {
     const div = document.querySelector(
-      `[query-id="query-${row.label.toString()}"]`
+      `[query-id="query-${row.label.toString()}"]`,
     );
 
     const rect = div!.getBoundingClientRect();
     if (ref.current && div) {
       ref.current.style.top = `${e.clientY - 50}px`;
       ref.current.style.left = `${rect.left}px`;
-      ref.current.setAttribute("data-display", "open");
+      ref.current.setAttribute('data-display', 'open');
       ref.current.onclick = () => {
         if (ref.current) {
           const copy = rows.filter((r) => r.label != row.label);
-          ref.current.setAttribute("data-display", "closed");
+          ref.current.setAttribute('data-display', 'closed');
           setRows(copy);
         }
       };
     }
   };
 
-  console.log("***************rows", rows);
   return (
     <div>
       <div className="font-medium">Rows</div>

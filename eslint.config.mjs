@@ -47,7 +47,6 @@ export default [
     rules: {
       'no-console': 2,
       'no-debugger': 2,
-      'prettier/prettier': 2,
       '@typescript-eslint/no-explicit-any': 2,
       '@typescript-eslint/no-unused-vars': 2,
       '@typescript-eslint/ban-ts-comment': 2,

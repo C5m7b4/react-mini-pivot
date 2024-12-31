@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Row, ValueType } from "../../../types";
+import { useState, useEffect } from 'react';
+import { Row, ValueType } from '../../../types';
 
 export interface FieldsProps<T> {
   data: T[];
@@ -19,14 +19,13 @@ const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
-    fieldType: keyof T
+    fieldType: keyof T,
   ) => {
-    console.log("drag start on fields");
-    e.dataTransfer.setData("fieldType", fieldType as string);
-    e.dataTransfer.effectAllowed = "copyMove";
-    (e.target as HTMLDivElement).style.border = "1px solid #070707";
-    (e.target as HTMLDivElement).style.borderRadius = "10px";
-    (e.target as HTMLDivElement).style.opacity = "0.8";
+    e.dataTransfer.setData('fieldType', fieldType as string);
+    e.dataTransfer.effectAllowed = 'copyMove';
+    (e.target as HTMLDivElement).style.border = '1px solid #070707';
+    (e.target as HTMLDivElement).style.borderRadius = '10px';
+    (e.target as HTMLDivElement).style.opacity = '0.8';
   };
 
   const handleCheck = () => {};
@@ -35,9 +34,9 @@ const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
 
   const hasBorder = (r: keyof T) => {
     if (usedFields) {
-      return usedFields!.includes(r) ? "border-2 border-green-400" : "";
+      return usedFields!.includes(r) ? 'border-2 border-green-400' : '';
     } else {
-      return "";
+      return '';
     }
   };
 
