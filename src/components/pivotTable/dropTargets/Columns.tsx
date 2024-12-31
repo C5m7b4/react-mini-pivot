@@ -1,8 +1,8 @@
-import { Column } from "../../../types";
-import { arrSum, doesRowExist } from "../../../utils/arrayUtils";
-import { getDragAfterElement } from "../../../utils/dragUtils";
-import { useClickOutside } from "../hooks/useClickOutside";
-import { ChevronDown } from "../Icons";
+import { Column } from '../../../types';
+import { arrSum, doesRowExist } from '../../../utils/arrayUtils';
+import { getDragAfterElement } from '../../../utils/dragUtils';
+import { useClickOutside } from '../hooks/useClickOutside';
+import { ChevronDown } from '../Icons';
 
 interface ColumnProps<T> {
   columns: Column<T>[];
@@ -12,31 +12,31 @@ interface ColumnProps<T> {
 const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
   const ref = useClickOutside<HTMLDivElement>(() => {
     if (ref.current) {
-      ref.current.setAttribute("data-display", "closed");
+      ref.current.setAttribute('data-display', 'closed');
     }
   });
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    (e.target as HTMLDivElement).classList.remove("dragging");
-    const fieldType = e.dataTransfer.getData("fieldType");
+    (e.target as HTMLDivElement).classList.remove('dragging');
+    const fieldType = e.dataTransfer.getData('fieldType');
     const newColumn: Column<T> = {
       label: fieldType as keyof T,
-      direction: "asc",
+      direction: 'asc',
       inclusions: [],
       fn: arrSum,
     };
 
-    const isExisting = doesRowExist(columns, "label", fieldType);
+    const isExisting = doesRowExist(columns, 'label', fieldType);
     if (isExisting.found) {
       const copy = columns.filter((r) => r.label != fieldType);
       const afterElement = getDragAfterElement(
         document.querySelector('[query-id="columns"]')!,
-        e.clientY
+        e.clientY,
       );
 
       if (afterElement) {
         const pos = columns.findIndex(
-          (r) => (r.label = afterElement.innerHTML)
+          (r) => (r.label = afterElement.innerHTML),
         );
         copy.splice(pos, 1, newColumn);
         setColumns(copy);
@@ -49,18 +49,18 @@ const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    (e.target as HTMLDivElement).style.border = "2px solid #000000";
-    e.dataTransfer.dropEffect = "move";
+    (e.target as HTMLDivElement).style.border = '2px solid #000000';
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
-    fieldType: Column<T>
+    fieldType: Column<T>,
   ) => {
-    e.dataTransfer.setData("fieldType", String(fieldType.label));
-    (e.target as HTMLDivElement).style.border = "1px solid #000";
-    (e.target as HTMLDivElement).style.opacity = "0.8";
-    (e.target as HTMLDivElement).classList.add("dragging");
+    e.dataTransfer.setData('fieldType', String(fieldType.label));
+    (e.target as HTMLDivElement).style.border = '1px solid #000';
+    (e.target as HTMLDivElement).style.opacity = '0.8';
+    (e.target as HTMLDivElement).classList.add('dragging');
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
@@ -70,21 +70,21 @@ const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
 
   const handleShowOptions = (
     e: React.MouseEvent<HTMLSpanElement>,
-    column: Column<T>
+    column: Column<T>,
   ) => {
     const div = document.querySelector(
-      `[query-id="query-${column.label.toString()}"]`
+      `[query-id="query-${column.label.toString()}"]`,
     );
 
     const rect = div!.getBoundingClientRect();
     if (ref.current && div) {
       ref.current.style.top = `${e.clientY - 50}px`;
       ref.current.style.left = `${rect.left}px`;
-      ref.current.setAttribute("data-display", "open");
+      ref.current.setAttribute('data-display', 'open');
       ref.current.onclick = () => {
         if (ref.current) {
           const copy = columns.filter((r) => r.label != column.label);
-          ref.current.setAttribute("data-display", "closed");
+          ref.current.setAttribute('data-display', 'closed');
           setColumns(copy);
         }
       };
