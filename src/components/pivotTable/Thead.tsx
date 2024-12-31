@@ -1,14 +1,9 @@
-import { Column, Row, ValueType } from "../../types";
-import UtilityContext from "./contexts/UtilityContext";
-import { ChevronDown } from "./Icons";
-import { useState, useRef } from "react";
-import HeaderContext from "./contexts/HeaderContext";
-import { unique } from "../../utils/unique";
-import {
-  getColumnCount,
-  getUniqueColumns,
-  getUniqueColumnValues,
-} from "../../utils/arrayUtils";
+import { Column, Row, ValueType } from '../../types';
+import UtilityContext from './contexts/UtilityContext';
+import { ChevronDown } from './Icons';
+import { useState, useRef } from 'react';
+import HeaderContext from './contexts/HeaderContext';
+import { getColumnCount, getUniqueColumns } from '../../utils/arrayUtils';
 
 export interface THeadProps<T> {
   rows: Row<T>[];
@@ -17,7 +12,7 @@ export interface THeadProps<T> {
   column: Column<T>;
   setRows: (rows: Row<T>[]) => void;
   setColumn: (column: Column<T>) => void;
-  handleSort: (key: keyof T, direction: "asc" | "desc") => void;
+  handleSort: (key: keyof T, direction: 'asc' | 'desc') => void;
   inclusions: string[];
   setInclusions: (inclusions: string[]) => void;
   handleAliasClick: (column: string) => void;
@@ -47,17 +42,18 @@ const Thead = <T,>({
     setShowUtilityContext(false);
 
     if (utilityRef.current) {
-      utilityRef.current.setAttribute("data-display", "closed");
+      utilityRef.current.setAttribute('data-display', 'closed');
     }
   };
 
   const setShowContextMenu = (
     e: React.MouseEvent<HTMLDivElement>,
-    r: Row<T>
+    r: Row<T>,
   ) => {
     const headerDiv = document.querySelector('[query-id="table-header"]');
     const c: Column<T> = {
       label: r.label,
+      direction: 'asc',
     };
     setColumn(c);
 
@@ -65,18 +61,18 @@ const Thead = <T,>({
       const rect = headerDiv.getBoundingClientRect();
       headerContextRef.current.style.top = `${rect.bottom}px`;
       headerContextRef.current.style.left = `${e.clientX}px`;
-      headerContextRef.current.setAttribute("data-display", "open");
+      headerContextRef.current.setAttribute('data-display', 'open');
     }
     setShowHeaderContext(true);
   };
 
   const handleSortDirection = (c: Row<T>) => {
-    setColumn(c);
+    setColumn(c as Column<T>);
     if (utilityRef.current) {
       if (showUtilityContext) {
-        utilityRef.current.setAttribute("data-display", "closed");
+        utilityRef.current.setAttribute('data-display', 'closed');
       } else {
-        utilityRef.current.setAttribute("data-display", "open");
+        utilityRef.current.setAttribute('data-display', 'open');
       }
     }
     setTimeout(() => {
@@ -84,13 +80,13 @@ const Thead = <T,>({
     }, 500);
   };
 
-  const handleSortLocal = (key: keyof T, direction: "asc" | "desc") => {
+  const handleSortLocal = (key: keyof T, direction: 'asc' | 'desc') => {
     handleSort(key, direction);
     if (utilityRef.current) {
       if (showUtilityContext) {
-        utilityRef.current.setAttribute("data-display", "closed");
+        utilityRef.current.setAttribute('data-display', 'closed');
       } else {
-        utilityRef.current.setAttribute("data-display", "open");
+        utilityRef.current.setAttribute('data-display', 'open');
       }
     }
     setTimeout(() => {
@@ -104,7 +100,7 @@ const Thead = <T,>({
         className={`relative grid ${getColumnCount(
           values,
           columns,
-          data
+          data,
         )} font-medium text-lg border-b gap-4 pl-2`}
       >
         {rows.map((r, i) => {
@@ -118,6 +114,7 @@ const Thead = <T,>({
           return (
             <div
               query-id="table-header"
+              data-testid="table-header"
               className="flex gap-4 border-r cursor-context"
               key={`th-${i}`}
               onContextMenu={(e) => {
@@ -127,6 +124,7 @@ const Thead = <T,>({
             >
               <span> {r.label.toString()}</span>
               <span
+                data-testid="sort-direction"
                 className="cursor-pointer"
                 onClick={() => handleSortDirection(r)}
               >
@@ -196,7 +194,7 @@ const Thead = <T,>({
             handleFormatterClick={handleFormatterClick}
             setShowHeaderContext={(b: boolean) => {
               if (headerContextRef.current) {
-                headerContextRef.current.setAttribute("data-display", "closed");
+                headerContextRef.current.setAttribute('data-display', 'closed');
               }
               setTimeout(() => {
                 setShowHeaderContext(b);
