@@ -18,7 +18,7 @@ const PivotTable = <T extends object>({
   headers,
   usePivot = false,
   setUsePivot,
-  demoMode = true,
+  demoMode = false,
 }: PivotTableProps<T>) => {
   const [rows, setRows] = useState<Row<T>[]>([]);
   const [filters, setFilters] = useState<FilterType<T>[]>([]);
@@ -50,8 +50,8 @@ const PivotTable = <T extends object>({
             </div>
             <div>
               <button
+                data-testid="btnPivot"
                 className=" px-10 py-2 bg-slate-200 rounded-lg shadow-lg text-black ml-2 mr-4 font-medium"
-                id="btnPivot"
                 onClick={() => {
                   if (setUsePivot) {
                     setUsePivot(!usePivot);

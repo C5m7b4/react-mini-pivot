@@ -5,12 +5,12 @@ import {
   fireEvent,
   createEvent,
 } from '@testing-library/react';
-import Configurator from '../../src/components/pivotTable/Configurator';
-import { describe, it, vi } from 'vitest';
-import { data, iData } from '../../example/data';
+import Configurator from '../../../../src/components/pivotTable/Configurator';
+import { describe, expect, it, vi } from 'vitest';
+import { data, iData } from '../../../../example/data';
 import '@testing-library/jest-dom';
 import { useState } from 'react';
-import { Row } from '../../src/types';
+import { Row } from '../../../../src/types';
 
 describe('Rows', () => {
   it('should render', async () => {

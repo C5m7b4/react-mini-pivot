@@ -1,8 +1,8 @@
-import { act, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { PivotTable } from '../src';
-import { data } from '../example/data';
-import { headers } from '../example/data/headers';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { PivotTable } from '../../../src';
+import { data } from '../../../example/data';
+import { headers } from '../../../example/data/headers';
 
 describe('PivotTable', () => {
   it('should render', async () => {
@@ -39,6 +39,34 @@ describe('PivotTable', () => {
     await act(async () => {
       render(<PivotTable data={data} headers={headers} />);
     });
-    const headerText = screen.getByTestId('header-text');
+  });
+  it('should render without demo mode', async () => {
+    await act(async () => {
+      render(
+        <PivotTable
+          data={data}
+          headers={headers}
+          usePivot={true}
+          demoMode={false}
+        />,
+      );
+    });
+  });
+  it('should toggle pivot mode', async () => {
+    const fn = vi.fn();
+    await act(async () => {
+      render(
+        <PivotTable
+          data={data}
+          headers={headers}
+          usePivot={true}
+          demoMode={true}
+          setUsePivot={fn}
+        />,
+      );
+    });
+
+    const btn = screen.getByTestId('btnPivot');
+    await fireEvent.click(btn);
   });
 });
