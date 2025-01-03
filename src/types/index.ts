@@ -1,13 +1,13 @@
 export type PrimitiveType = string | number | boolean | null;
 export const Aggregator = {
-  SUM: "sum",
-  COUNT: "count",
-  AVERAGE: "average",
-  MIN: "min",
-  MAX: "max",
+  SUM: 'sum',
+  COUNT: 'count',
+  AVERAGE: 'average',
+  MIN: 'min',
+  MAX: 'max',
 } as const;
 
-export type SortDirection = "asc" | "desc";
+export type SortDirection = 'asc' | 'desc';
 
 export type Row<T> = {
   label: keyof T;
@@ -25,7 +25,7 @@ export type ValueType<T> = {
     data: T[],
     label: keyof T,
     recordLabel: T[keyof T],
-    vlabel: keyof T
+    vlabel: keyof T,
   ) => string;
 };
 
@@ -37,7 +37,7 @@ export type Column<T> = {
     data: T[],
     label: keyof T,
     recordLabel: T[keyof T],
-    vlabel: keyof T
+    vlabel: keyof T,
   ) => string;
 };
 
@@ -47,7 +47,7 @@ export type FilterType<T> = {
 
 export type Header = {
   title: string;
-  type: "number" | "string" | "boolean" | "date" | "money";
+  type: 'number' | 'string' | 'boolean' | 'date' | 'money';
   formatter: (value: string | number | boolean) => string;
   alias: string;
   visible: boolean;

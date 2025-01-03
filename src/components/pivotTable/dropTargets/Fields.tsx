@@ -1,21 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Row, ValueType } from '../../../types';
+import { Column, Row, ValueType } from '../../../types';
 
 export interface FieldsProps<T> {
   data: T[];
   rows: Row<T>[];
   values: ValueType<T>[];
-  query: string;
+  query?: string;
+  columns: Column<T>[];
 }
 
-const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
+const Fields = <T,>({
+  data,
+  rows,
+  values,
+  query = '',
+  columns,
+}: FieldsProps<T>) => {
   const [usedFields, setUsedFields] = useState<(keyof T)[] | undefined>([]);
 
   useEffect(() => {
     const valueFields = values.map((v) => v.label);
     const rowFields = rows.map((r) => r.label);
-    setUsedFields([...rowFields, ...valueFields]);
-  }, [rows, values]);
+    const columnFields = columns.map((c) => c.label);
+    setUsedFields([...rowFields, ...valueFields, ...columnFields]);
+  }, [rows, values, columns]);
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -23,9 +31,6 @@ const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
   ) => {
     e.dataTransfer.setData('fieldType', fieldType as string);
     e.dataTransfer.effectAllowed = 'copyMove';
-    (e.target as HTMLDivElement).style.border = '1px solid #070707';
-    (e.target as HTMLDivElement).style.borderRadius = '10px';
-    (e.target as HTMLDivElement).style.opacity = '0.8';
   };
 
   const handleCheck = () => {};
@@ -33,11 +38,9 @@ const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
   const firstRecord: T = data[0];
 
   const hasBorder = (r: keyof T) => {
-    if (usedFields) {
-      return usedFields!.includes(r) ? 'border-2 border-green-400' : '';
-    } else {
-      return '';
-    }
+    return usedFields!.includes(r)
+      ? 'border border-1 border-blue-400 rounded-lg'
+      : '';
   };
 
   return (
@@ -47,9 +50,9 @@ const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
           if (r.includes(query.toLowerCase())) {
             return (
               <div
-                className={`cursor-pointer mb-1`}
+                className={`cursor-pointer mb-1 ${hasBorder(r as keyof T)}`}
                 key={`field-${i}`}
-                style={{ border: hasBorder(r as keyof T) }}
+                // style={{ border: hasBorder(r as keyof T) }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, r as keyof T)}
               >
@@ -68,9 +71,9 @@ const Fields = <T,>({ data, rows, values, query }: FieldsProps<T>) => {
             <div
               query-id={`query-field-${i}`}
               data-testid={`field-${i}`}
-              className={`cursor-pointer mb-1`}
+              className={`cursor-pointer mb-1 ${hasBorder(r as keyof T)}`}
               key={`field-${i}`}
-              style={{ border: hasBorder(r as keyof T) }}
+              // style={{ border: hasBorder(r as keyof T) }}
               draggable
               onDragStart={(e) => handleDragStart(e, r as keyof T)}
             >

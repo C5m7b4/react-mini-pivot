@@ -16,9 +16,9 @@ export interface PivotTableProps<T extends object> {
 const PivotTable = <T extends object>({
   data,
   headers,
-  usePivot = false,
+  usePivot = true,
   setUsePivot,
-  demoMode = false,
+  demoMode = true,
 }: PivotTableProps<T>) => {
   const [rows, setRows] = useState<Row<T>[]>([]);
   const [filters, setFilters] = useState<FilterType<T>[]>([]);

@@ -78,16 +78,22 @@ const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
 
     const rect = div!.getBoundingClientRect();
     if (ref.current && div) {
-      ref.current.style.top = `${e.clientY - 50}px`;
-      ref.current.style.left = `${rect.left}px`;
+      const configurator = document.querySelector('[query-id="configurator"]');
+      const configBox = configurator?.getBoundingClientRect();
+
+      // ref.current.style.top = `${e.clientY}px`;
+      ref.current.style.bottom = `${rect.top - configBox!.top - 50}px`;
+      ref.current.style.left = `${rect.left - configBox!.left}px`;
+
+      // ref.current.style.position = 'absolute';
       ref.current.setAttribute('data-display', 'open');
-      ref.current.onclick = () => {
-        if (ref.current) {
-          const copy = columns.filter((r) => r.label != column.label);
-          ref.current.setAttribute('data-display', 'closed');
-          setColumns(copy);
-        }
-      };
+      // ref.current.onclick = () => {
+      //   if (ref.current) {
+      //     const copy = columns.filter((r) => r.label != column.label);
+      //     ref.current.setAttribute('data-display', 'closed');
+      //     setColumns(copy);
+      //   }
+      // };
     }
   };
 
@@ -95,7 +101,7 @@ const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
     <div>
       <div className="font-medium">Columns</div>
       <div
-        className="border rounded-md shadow-md p-2 min-h-[150px] max-h-[200px] overflow-y-auto"
+        className="relative border rounded-md shadow-md p-2 min-h-[150px] max-h-[200px] overflow-y-auto"
         query-id="columns"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -103,18 +109,16 @@ const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
       >
         {columns.map((c, i) => (
           <div
+            onClick={(e) => handleShowOptions(e, c)}
             query-id={`query-${c.label.toString()}`}
             draggable
             onDragStart={(e) => handleDragStart(e, c)}
             onDragLeave={(e) => handleDragLeave(e)}
             key={`column-${i}`}
-            className="flex justify-between draggable-item border rounded-md shadow-sm px-2 mb-1"
+            className="flex justify-between draggable-item border rounded-md shadow-sm px-2 mb-1 cursor-pointer"
           >
             <span>{String(c.label)}</span>
-            <span
-              className="flex justify-center items-center"
-              onClick={(e) => handleShowOptions(e, c)}
-            >
+            <span className="flex justify-center items-center">
               <ChevronDown height={10} width={10} stroke="#000" />
             </span>
           </div>
@@ -123,10 +127,40 @@ const Columns = <T,>({ columns, setColumns }: ColumnProps<T>) => {
       <div
         ref={ref}
         data-display="closed"
-        className="absolute data-[display=closed]:animate-dissapear data-[display=open]:animate-appear
-        border rounded-lg shadow-md px-2 py-1 bg-white"
+        className="bg-white absolute data-[display=closed]:animate-dissapear data-[display=open]:animate-appear
+        border rounded-lg shadow-md px-2 py-1 opacity-100"
       >
-        <div className="cursor-pointer">Remove Field</div>
+        <div
+          className={`${columns.length > 1 ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move Up
+        </div>
+        <div
+          className={`${columns.length > 1 ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move Down
+        </div>
+        <div
+          className={`${columns.length > 1 ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move to Beginning
+        </div>
+        <div
+          className={`${columns.length > 1 ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move to End
+        </div>
+        <div>
+          <hr />
+        </div>
+        <div className="cursor-pointer hover:bg-slate-100">Move to Filters</div>
+        <div className="cursor-pointer hover:bg-slate-100">Move to Rows</div>
+        <div className="cursor-pointer hover:bg-slate-100">Move to Values</div>
+        <div>
+          <hr />
+        </div>
+        <div className="cursor-pointer hover:bg-slate-100">Remove Field</div>
+        <div className="cursor-pointer hover:bg-slate-100">Field Settings</div>
       </div>
     </div>
   );

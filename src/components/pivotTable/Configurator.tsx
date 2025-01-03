@@ -83,7 +83,13 @@ const Configurator = <T,>({
           />
         </div>
         <div className="fields-container" query-id="fields-container">
-          <Fields data={data} rows={rows} values={values} query={query} />
+          <Fields
+            data={data}
+            rows={rows}
+            values={values}
+            query={query}
+            columns={columns}
+          />
         </div>
         <div>
           <div className="text-sm font-medium text-center mt-2">
@@ -93,7 +99,16 @@ const Configurator = <T,>({
             <div className="w-1/2">
               <Filters filters={filters} setFilters={setFilters} />
 
-              <Rows rows={rows} setRows={setRows} />
+              <Rows
+                rows={rows}
+                setRows={setRows}
+                filters={filters}
+                setFilters={setFilters}
+                columns={columns}
+                setColumns={setColumns}
+                values={values}
+                setValues={setValues}
+              />
             </div>
             <div className="w-1/2">
               <Columns columns={columns} setColumns={setColumns} />
