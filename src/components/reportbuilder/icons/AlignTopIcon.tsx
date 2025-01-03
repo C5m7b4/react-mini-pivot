@@ -1,15 +1,16 @@
 import { IconProps } from '../../pivotTable/Icons';
 import Tooltip from '../../tooltip/Tooltip';
 
-const AlignRightIcon = ({
+const AlignTopIcon = ({
   height,
   width,
   fill = 'transparent',
   stroke = '#000',
   className,
+  onClick,
 }: IconProps) => {
   return (
-    <Tooltip content="Align Right" position="bottom">
+    <Tooltip content="Align Top" position="bottom">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -17,9 +18,14 @@ const AlignRightIcon = ({
         width={`${width}px`}
         fill={fill}
         stroke={stroke}
-        strokeWidth={4}
+        strokeWidth={6}
         className={className}
         viewBox="0 0 100 100"
+        onClick={() => {
+          if (onClick) {
+            onClick();
+          }
+        }}
       >
         <g id="Layer_1">
           <rect
@@ -32,11 +38,11 @@ const AlignRightIcon = ({
             ry="17.1"
           />
           <g>
-            <line x1="76.3" y1="76" x2="76.3" y2="21" />
-            <line x1="65.2" y1="71.3" x2="65.2" y2="26.5" />
-            <line x1="56.7" y1="49.5" x2="23.7" y2="49.5" />
-            <line x1="49.7" y1="62.5" x2="56.7" y2="49.5" />
-            <line x1="56.7" y1="49.5" x2="49.7" y2="36.5" />
+            <line x1="77.5" y1="22.2" x2="22.5" y2="22.2" />
+            <line x1="72.8" y1="33.3" x2="28" y2="33.3" />
+            <line x1="51" y1="41.8" x2="51" y2="74.8" />
+            <line x1="64" y1="48.8" x2="51" y2="41.8" />
+            <line x1="51" y1="41.8" x2="38" y2="48.8" />
           </g>
         </g>
       </svg>
@@ -44,4 +50,4 @@ const AlignRightIcon = ({
   );
 };
 
-export default AlignRightIcon;
+export default AlignTopIcon;

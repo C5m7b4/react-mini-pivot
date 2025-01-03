@@ -9,8 +9,12 @@ import DataBooleanIcon from './DataBooleanIcon';
 import DataMoneyIcon from './DataMoneyIcon';
 import DataGuidIcon from './DataGuidIcon';
 import DataCalendarIcon from './DataCalendarIcon';
+import AlignTopIcon from './AlignTopIcon';
+import AlignBottomIcon from './AlignBottomIcon';
 
 export {
+  AlignTopIcon,
+  AlignBottomIcon,
   AlignLeftIcon,
   AlignCenterIcon,
   AlignRightIcon,

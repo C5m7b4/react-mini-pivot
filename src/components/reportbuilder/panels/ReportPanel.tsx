@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import DataTool from '../tools/DataTool';
 import { checkOverlap } from '../utils';
 import { useAppContext } from '../hooks/useAppContext';
@@ -10,25 +10,78 @@ interface ReportPanelProps<T> {
 }
 
 const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
-  const { setActiveTool } = useAppContext();
-  const [tools, setTools] = useState<ToolProps[]>([]);
-  const { liveMode } = useAppContext();
+  const context = useAppContext();
+  const { liveMode, reportTools, setReportTools, setActiveTool } =
+    useAppContext();
   const ref = useRef<HTMLDivElement>(null);
+  const contextRef = useRef(context);
 
-  const handleMouseDown = () => {
-    setActiveTool(null);
-  };
+  useEffect(() => {
+    contextRef.current = context;
+  }, [context]);
 
   useEffect(() => {
     if (ref.current) {
       ref.current.addEventListener('mousedown', handleMouseDown);
+      ref.current.addEventListener('keydown', handleKeyDown);
     }
     return () => {
       if (ref.current) {
         ref.current.removeEventListener('mousedown', handleMouseDown);
+        ref.current.removeEventListener('keydown', handleKeyDown);
       }
     };
   }, []);
+
+  useEffect(() => {}, [reportTools]);
+
+  const handleMouseDown = () => {
+    // check here to see if we are clicking on the blank canvas or on an item
+
+    let toolClicked = false;
+    if (isToolClicked(contextRef.current.activeTool?.queryId)) {
+      toolClicked = true;
+    }
+    contextRef.current.activeTools.forEach((tool) => {
+      if (isToolClicked(tool.queryId)) {
+        toolClicked = true;
+      }
+    });
+    if (!toolClicked) {
+      // @ts-expect-error we need this to be null
+      setActiveTool(null);
+    }
+  };
+
+  const isToolClicked = (queryId: string) => {
+    const toolDiv = document.querySelector(
+      `[query-id="${queryId}"]`,
+    ) as HTMLDivElement;
+    if (ref.current) {
+      if (ref.current.contains(toolDiv)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    switch (e.code) {
+      case 'Delete':
+        if (
+          contextRef.current.activeTool &&
+          contextRef.current.activeTool.queryId
+        ) {
+          const newTools = contextRef.current.reportTools.filter(
+            (tool) => tool.queryId !== contextRef.current.activeTool.queryId,
+          );
+          setReportTools(newTools);
+        }
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
     const div = e.target as HTMLDivElement;
@@ -67,8 +120,11 @@ const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
         paddingRight: 0,
         paddingBottom: 0,
         paddingTop: 0,
+        toolSection: 'report-panel',
       };
-      setTools([...tools, obj]);
+
+      setReportTools([...reportTools, obj]);
+      setActiveTool(obj);
     }
   };
 
@@ -82,7 +138,7 @@ const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
     if (liveMode) {
       return;
     }
-    if (type === 'reports') {
+    if (type === 'report-panel') {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
     }
@@ -98,6 +154,7 @@ const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
 
   return (
     <div
+      tabIndex={0}
       ref={ref}
       className="w-full h-full"
       onDragEnd={handleDragEnd}
@@ -109,18 +166,18 @@ const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
       {liveMode ? (
         <div
           className={`overflow-y-scroll overflow-x-hidden pt-2 pb-2`}
-          style={{ maxHeight: calculateHeight() }}
+          style={{ height: calculateHeight(), maxHeight: calculateHeight() }}
         >
           {data.map((d, didx) => {
             return (
               <div
                 key={`r-d-${didx}`}
-                className={`grid grid-cols-${tools.length}`}
+                className={`grid grid-cols-${reportTools.length}`}
               >
-                {tools.map((tool, tidx) => {
+                {reportTools.map((tool, tidx) => {
                   return (
                     <div
-                      className="absolute"
+                      // className="absolute"
                       key={`r-d-t-${tidx}`}
                       style={{
                         left: `${tool.x}px`,
@@ -137,7 +194,8 @@ const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
         </div>
       ) : (
         <div>
-          {tools.map((tool, idx) => {
+          {reportTools.map((tool, idx) => {
+            console.log('tool top', tool.y);
             return (
               <div key={`tool-${idx}`}>
                 <DataTool
@@ -159,6 +217,7 @@ const ReportPanel = <T,>({ data }: ReportPanelProps<T>) => {
                   paddingTop={tool.paddingTop}
                   paddingBottom={tool.paddingBottom}
                   textDecoration={tool.textDecoration}
+                  toolSection={tool.toolSection}
                 />
               </div>
             );

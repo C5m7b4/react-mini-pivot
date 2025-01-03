@@ -12,34 +12,9 @@ interface MainProps<T> {
 const Main = <T,>({ data }: MainProps<T>) => {
   const context = useContext(AppContext);
 
-  const handleKeydown = (e: KeyboardEvent) => {
-    if (context) {
-      switch (e.code) {
-        case 'ArrowUp':
-          break;
-        case 'ArrowDown':
-          break;
-        case 'ArrowLeft':
-          const newLeft = context.left - 50;
-          context.setLeft(newLeft);
-          break;
-        case 'ArrowRight':
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeydown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeydown);
-    };
-  }, []);
+  useEffect(() => {}, []);
   return (
-    <div className="p-4 ">
+    <div className="p-4">
       <div className="flex justify-between">
         <h2>Report Builder</h2>
         <div>
@@ -54,7 +29,7 @@ const Main = <T,>({ data }: MainProps<T>) => {
       </div>
       <Toolbar />
       <div className="w-full flex gap-4">
-        <div className="w-1/6 rounded-lg shadow-md">
+        <div className="w-1/6">
           <Sidebar data={data} />
         </div>
         <div className="canvas border rounded-lg shadow-md flex-1">

@@ -1,4 +1,5 @@
 import { getIconComponent } from './utils';
+import Messages from './panels/Messages';
 
 interface SidebarProps<T> {
   data: T[];
@@ -42,10 +43,26 @@ const Sidebar = <T,>({ data }: SidebarProps<T>) => {
 
   const toolClassName =
     'pl-2 pr-4 py-2 text-left hover:bg-gray-100 transition-all duration-500 cursor-pointer transition-all duration-500';
+
+  const calculateHeight = () => {
+    const toolbar = document.querySelector('[query-id="master-toolbar"]');
+    const box = toolbar?.getBoundingClientRect();
+    if (box) {
+      const remaining = window.innerHeight - (box.top! + box.height!) - 50;
+      return remaining;
+    }
+    return 0;
+  };
+
   return (
-    <div className="w-full">
-      <div className="text-xl font-medium border-b">Sidebar</div>
-      <div>
+    <div
+      className="relative w-full border rounded-lg shadow-md"
+      style={{ height: `${calculateHeight()}px` }}
+    >
+      <div className="text-xl font-medium border-b pl-4 bg-slate-100">
+        Sidebar
+      </div>
+      <div className="px-2">
         <div className="text-lg font-medium border-b mt-4">Tools</div>
         {tools.map((tool, tidx) => {
           return (
@@ -65,8 +82,8 @@ const Sidebar = <T,>({ data }: SidebarProps<T>) => {
         })}
       </div>
       <div>
-        <div className="text-lg font-medium border-b mt-4">Fields</div>
-        <div>
+        <div className="text-lg font-medium border-b mt-4 pl-2">Fields</div>
+        <div className="px-2">
           {Object.keys(firstRecord as object).map((key, idx) => {
             const IconComponent = getIconComponent(data, key as keyof T);
             return (
@@ -76,7 +93,7 @@ const Sidebar = <T,>({ data }: SidebarProps<T>) => {
                   draggable
                   className={`${toolClassName} flex gap-4`}
                   onDragStart={(e) =>
-                    handleDragStart(e, key, 'DataStringIcon', `reports`)
+                    handleDragStart(e, key, 'DataStringIcon', `report-panel`)
                   }
                 >
                   <div>
@@ -90,6 +107,9 @@ const Sidebar = <T,>({ data }: SidebarProps<T>) => {
             );
           })}
         </div>
+      </div>
+      <div className="absolute left-0 bottom-0 right-0 border rounded-ld ">
+        <Messages />
       </div>
     </div>
   );

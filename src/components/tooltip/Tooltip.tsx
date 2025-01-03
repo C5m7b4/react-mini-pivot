@@ -32,6 +32,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       {children}
       {isVisible && (
         <div
+          style={{ zIndex: 999 }}
           className={`absolute ${positionClasses[position]} p-2 bg-gray-800 text-white text-sm rounded shadow-lg
                       transition-opacity duration-500 ease-in-out opacity-100 transform scale-100 whtespace-nowrap  text-center px-4`}
         >

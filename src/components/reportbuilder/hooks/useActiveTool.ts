@@ -16,3 +16,8 @@ export const useActiveTool = () => {
 
   return { activeTool };
 };
+
+export const useActiveTools = () => {
+  const { activeTools, setActiveTools } = useAppContext();
+  return { activeTools, setActiveTools };
+};

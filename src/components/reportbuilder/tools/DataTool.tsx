@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react';
-// import { useClickOutside } from '../../pivotTable/hooks/useClickOutside';
 import { ToolProps } from '../types';
-import { useAppContext } from '../hooks/useAppContext';
 import { AppContext } from '../AppProvider';
 
 const DataTool = ({
@@ -23,10 +21,10 @@ const DataTool = ({
   paddingBottom,
   paddingTop,
   textDecoration,
+  toolSection,
 }: ToolProps) => {
-  // const { activeTool, setActiveTool } = useAppContext();
   const context = useContext(AppContext);
-  const { activeTool, setActiveTool } = context!;
+  const { activeTool, setActiveTool, activeTools, setActiveTools } = context!;
   const [position, setPosition] = useState({ x: x, y: y });
   const [size, setSize] = useState({ width: width, height: height });
   const [attributes, setAttributes] = useState({
@@ -66,9 +64,27 @@ const DataTool = ({
           fontStyle: activeTool.fontStyle,
           textDecoration: activeTool.textDecoration,
         });
+      } else {
+        setPosition({ x: x, y: y });
+        setSize({ width: width, height: height });
+        setAttributes({
+          textAlign: textAlign,
+          lineHeight: lineHeight,
+          fontWeight: fontWeight,
+          fontSize: fontSize,
+          fontVariant: fontVariant,
+          text: text,
+          fieldType: fieldType,
+          paddingLeft: paddingLeft,
+          paddingRight: paddingRight,
+          paddingBottom: paddingBottom,
+          paddingTop: paddingTop,
+          fontStyle: fontStyle,
+          textDecoration: textDecoration,
+        });
       }
     }
-  }, [activeTool]);
+  }, [activeTool, y, x, width, height]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const l = ref.current?.offsetLeft;
@@ -117,11 +133,19 @@ const DataTool = ({
       paddingTop: paddingTop,
       fontStyle: fontStyle,
       textDecoration: textDecoration,
+      toolSection: toolSection,
     };
-    setActiveTool(tool);
 
-    if (ref.current) {
-      ref.current.style.border = '1px solid black';
+    if (e.shiftKey) {
+      setActiveTools([...activeTools, tool]);
+      if (ref.current) {
+        ref.current.style.border = '1px solid orange';
+      }
+    } else {
+      setActiveTool(tool);
+      if (ref.current) {
+        ref.current.style.border = '1px solid blue';
+      }
     }
   };
 
@@ -137,27 +161,11 @@ const DataTool = ({
           const newWidth = width! + evt.pageX - startX;
           // ref.current.style.width = newWidth + 'px';
           setSize({ width: newWidth, height: size.height });
-          const tool: ToolProps = {
-            fieldType: fieldType,
-            x: parseInt(position.x.toString()),
-            y: parseInt(position.y.toString()),
-            width: newWidth,
-            height: parseInt(height.toString()),
-            fontSize: fontSize,
-            fontWeight: fontWeight,
-            textAlign: textAlign,
-            fontVariant: fontVariant,
-            text: text,
-            queryId: queryId,
-            lineHeight: lineHeight,
-            paddingLeft: paddingLeft,
-            paddingRight: paddingRight,
-            paddingBottom: paddingBottom,
-            paddingTop: paddingTop,
-            fontStyle: fontStyle,
-            textDecoration: textDecoration,
+          const updatedActiveTool = {
+            ...activeTool,
+            size: { width: newWidth, height: size.height },
           };
-          setActiveTool(tool);
+          setActiveTool(updatedActiveTool);
         }
       };
 
@@ -196,7 +204,9 @@ const DataTool = ({
       }}
       onClick={handleToolClick}
     >
-      <div onMouseDown={handleMouseDown}>{attributes.fieldType}</div>
+      <div onMouseDown={handleMouseDown} className="select-none">
+        {attributes.fieldType}
+      </div>
       <div
         className="absolute top-0 right-0 p-1 text-white text-xs cursor-col-resize"
         onMouseDown={handleResizeMouseDown}

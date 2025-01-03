@@ -23,6 +23,25 @@ const JsonTreeView: React.FC<JsonTreeViewProps> = ({ data }) => {
     return <span className="text-gray-600"> {String(node)}</span>;
   };
 
+  const isArray = (arr: any) => {
+    if (Array.isArray(arr)) {
+      return ' - (' + arr.length.toString() + ')';
+    }
+    return '';
+  };
+
+  const isFunction = (func: any) => {
+    return func && {}.toString.call(func) === '[object Function]';
+  };
+
+  const isObject = (obj: any) => {
+    if (typeof obj === 'object' && obj !== null) {
+      return '{}';
+    } else {
+      return '';
+    }
+  };
+
   const TreeNode: React.FC<{
     nodeKey: string;
     value: any;
@@ -46,10 +65,17 @@ const JsonTreeView: React.FC<JsonTreeViewProps> = ({ data }) => {
               ▶
             </span>
           )}
-          <span className="font-semibold">{nodeKey}:</span>
-          {!isExpandable && (
-            <span className="ml-2 text-gray-600">{String(value)}</span>
-          )}
+          {!isFunction(value) ? (
+            <>
+              <span className="font-semibold">
+                {nodeKey}
+                {isArray(value) ? isArray(value) : isObject(value)}:
+              </span>
+              {!isExpandable && (
+                <span className="ml-2 text-gray-600">{String(value)}</span>
+              )}
+            </>
+          ) : null}
         </div>
         {expanded && isExpandable && renderTree(value, keyPath)}
       </div>
@@ -60,54 +86,3 @@ const JsonTreeView: React.FC<JsonTreeViewProps> = ({ data }) => {
 };
 
 export default JsonTreeView;
-
-// import { useState } from 'react';
-// import { AppContextType } from '../AppProvider';
-
-// interface TreeNodeProps {
-//   data: AppContextType;
-//   name?: string;
-// }
-
-// const TreeNode = ({ data, name }: TreeNodeProps) => {
-//   const [isExpanded, setIsExpanded] = useState(false);
-
-//   const toggleNode = () => {
-//     setIsExpanded(!isExpanded);
-//   };
-
-//   const isObject = (value: any) => typeof value === 'object' && value !== null;
-
-//   return (
-//     <div>
-//       <span
-//         onClick={toggleNode}
-//         style={{
-//           cursor: 'pointer',
-//           fontWeight: isObject(data) ? 'bold' : 'normal',
-//         }}
-//       >
-//         {isObject(data) ? (isExpanded ? '▼' : '▶') : null} {name || 'root'}
-//       </span>
-//       {isExpanded &&
-//         isObject(data) &&
-//         Object.entries(data).map(([key, value]) => (
-//           <TreeNode key={key} data={value} name={key} />
-//         ))}
-//     </div>
-//   );
-// };
-
-// interface JsonViewerProps {
-//   data: AppContextType;
-// }
-
-// const JsonViewer = ({ data }: JsonViewerProps) => {
-//   return (
-//     <div className="border rounded-md shadow-md mt-2 p-2">
-//       <TreeNode data={data} />
-//     </div>
-//   );
-// };
-
-// export default JsonViewer;

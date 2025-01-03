@@ -13,7 +13,7 @@ interface PropertiesProps<T> {
 }
 
 const Properties = <T,>({ data }: PropertiesProps<T>) => {
-  const { setActiveTool } = useAppContext();
+  const { setActiveTool, reportTools, setReportTools } = useAppContext();
   const { activeTool } = useActiveTool();
   const context = useAppContext();
 
@@ -23,6 +23,14 @@ const Properties = <T,>({ data }: PropertiesProps<T>) => {
     if (activeTool) {
       const updatedTool = { ...activeTool, [key]: value };
       setActiveTool(updatedTool);
+      if (activeTool.toolSection === 'reports') {
+        const copy = [...reportTools];
+        const pos = copy.findIndex((t) => t.queryId === activeTool.queryId);
+        copy.splice(pos, 1, updatedTool);
+        setReportTools(copy);
+      } else if (activeTool.toolSection === 'header') {
+      } else if (activeTool.toolSection === 'footer') {
+      }
     }
   };
 

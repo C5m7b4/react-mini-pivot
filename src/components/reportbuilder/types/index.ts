@@ -1,4 +1,5 @@
 export type TextAlignType = 'left' | 'center' | 'right';
+export type ToolSection = 'header' | 'report-panel' | 'footer' | 'none';
 
 export interface ToolProps {
   fieldType: string;
@@ -22,4 +23,12 @@ export interface ToolProps {
   paddingTop: number;
   paddingBottom: number;
   textDecoration: string;
+  toolSection: ToolSection;
+}
+
+export type MessageType = 'error' | 'warning' | 'info' | 'success';
+
+export interface MessageProps {
+  message: string;
+  type: MessageType;
 }
