@@ -1,11 +1,11 @@
-import { ValueType } from "../../../types";
+import { ValueType } from '../../../types';
 import {
   aggregateOptions,
   arrAvg,
   arrCount,
   arrSum,
-} from "../../../utils/arrayUtils";
-import type { Aggregator } from "../../../types";
+} from '../../../utils/arrayUtils';
+import type { Aggregator } from '../../../types';
 
 export interface ValuesProps<T> {
   values: ValueType<T>[];
@@ -15,24 +15,24 @@ export interface ValuesProps<T> {
 const Values = <T,>({ values, setValues }: ValuesProps<T>) => {
   const handleSelectChange = (
     label: string | number | symbol,
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const selectedAggregate = values.filter((v) => v.label === label)[0];
     const index = values.findIndex((v) => v.label === label);
     let currentFn = arrSum;
-    let currentDescription: keyof typeof Aggregator = "SUM";
+    let currentDescription: keyof typeof Aggregator = 'SUM';
     switch (e.target.value) {
-      case "Count":
+      case 'Count':
         currentFn = arrCount;
-        currentDescription = "COUNT";
+        currentDescription = 'COUNT';
         break;
-      case "Sum":
+      case 'Sum':
         currentFn = arrSum;
-        currentDescription = "SUM";
+        currentDescription = 'SUM';
         break;
-      case "Avg":
+      case 'Avg':
         currentFn = arrAvg;
-        currentDescription = "AVERAGE";
+        currentDescription = 'AVERAGE';
         break;
       default:
         currentFn = arrSum;
@@ -49,12 +49,12 @@ const Values = <T,>({ values, setValues }: ValuesProps<T>) => {
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    const fieldType = e.dataTransfer.getData("fieldType");
+    const fieldType = e.dataTransfer.getData('fieldType');
     const newValue: ValueType<T> = {
-      aggregator: "SUM",
+      aggregator: 'SUM',
       label: fieldType as keyof T,
       fn: arrSum,
-      direction: "asc",
+      direction: 'asc',
     };
     const newValues = [...values, newValue];
     setValues(newValues);
@@ -79,7 +79,7 @@ const Values = <T,>({ values, setValues }: ValuesProps<T>) => {
         {values.map((v, i) => (
           <div
             key={`value-${i}`}
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}
           >
             <span>{String(v.label)}</span>
             <span>

@@ -42,6 +42,7 @@ describe('Columns', () => {
     render(<Wrapper />);
 
     const field = screen.getByTestId('field-2');
+    expect(field.textContent).toEqual('isLoyalty');
     const columnsContainer = queryByQueryId(document.body, 'columns');
     const dragStartEvent = createEvent.dragStart(field);
     const dragOverEvent = createEvent.dragOver(columnsContainer!);
@@ -55,7 +56,7 @@ describe('Columns', () => {
       value: { dropEffect: 'move' },
     });
     Object.defineProperty(dropEvent, 'dataTransfer', {
-      value: { getData: vi.fn(() => 'company') },
+      value: { getData: vi.fn(() => 'isLoyalty') },
     });
 
     await act(async () => {
@@ -65,5 +66,10 @@ describe('Columns', () => {
     });
 
     expect(columnsContainer?.children.length).toEqual(1);
+
+    // let make sure that the field has a border around it and is checked
+    expect(field.classList).toContain('border');
+    const checkbox = field.querySelector('input');
+    expect(checkbox!.checked).toBeTruthy();
   });
 });

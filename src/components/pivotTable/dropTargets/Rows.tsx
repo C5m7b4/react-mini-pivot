@@ -1,16 +1,32 @@
-import { Row } from '../../../types';
+import { Column, FilterType, Row, ValueType } from '../../../types';
 import { doesRowExist } from '../../../utils/arrayUtils';
 import { getDragAfterElement } from '../../../utils/dragUtils';
 import { ChevronDown } from '../Icons';
 import { useClickOutside } from '../hooks/useClickOutside';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface RowProps<T> {
   rows: Row<T>[];
   setRows: (rows: Row<T>[]) => void;
+  filters: FilterType<T>[];
+  setFilters: (filters: FilterType<T>[]) => void;
+  columns: Column<T>[];
+  setColumns: (columns: Column<T>[]) => void;
+  values: ValueType<T>[];
+  setValues: (values: ValueType<T>[]) => void;
 }
 
-const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
+const Rows = <T,>({
+  rows,
+  setRows,
+  filters,
+  setFilters,
+  columns,
+  setColumns,
+  values,
+  setValues,
+}: RowProps<T>) => {
+  const [currentRow, setCurrentRow] = useState<Row<T>>();
   const ref = useClickOutside<HTMLDivElement>(() => {
     if (ref.current) {
       ref.current.setAttribute('data-display', 'closed');
@@ -78,19 +94,143 @@ const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
     const div = document.querySelector(
       `[query-id="query-${row.label.toString()}"]`,
     );
+    setCurrentRow(row);
 
     const rect = div!.getBoundingClientRect();
     if (ref.current && div) {
-      ref.current.style.top = `${e.clientY - 50}px`;
-      ref.current.style.left = `${rect.left}px`;
+      const configurator = document.querySelector('[query-id="configurator"]');
+      const configBox = configurator?.getBoundingClientRect();
+
+      ref.current.style.top = `${rect.top - configBox!.top - 240}px`;
+      ref.current.style.left = `${rect.left - configBox!.left}px`;
+
       ref.current.setAttribute('data-display', 'open');
-      ref.current.onclick = () => {
-        if (ref.current) {
-          const copy = rows.filter((r) => r.label != row.label);
-          ref.current.setAttribute('data-display', 'closed');
-          setRows(copy);
-        }
+    }
+  };
+
+  const handleRemove = () => {
+    if (ref.current && currentRow) {
+      const copy = rows.filter((r) => r.label != currentRow.label);
+      ref.current.setAttribute('data-display', 'closed');
+      setRows(copy);
+      ref.current.setAttribute('data-display', 'closed');
+    }
+  };
+
+  const handleMoveUp = () => {
+    if (rows.length > 1 && !isFirst()) {
+      if (ref.current && currentRow) {
+        const copy = [...rows];
+        const pos = copy.findIndex((r) => r.label === currentRow.label);
+        copy.splice(pos, 1);
+        copy.splice(pos - 1, 0, currentRow);
+        setRows(copy);
+        ref.current.setAttribute('data-display', 'closed');
+      }
+    }
+  };
+
+  const handleMoveDown = () => {
+    if (rows.length > 1 && !isLast()) {
+      if (ref.current && currentRow) {
+        const copy = [...rows];
+        const pos = copy.findIndex((r) => r.label === currentRow.label);
+        copy.splice(pos, 1);
+        copy.splice(pos + 1, 0, currentRow);
+        setRows(copy);
+        ref.current.setAttribute('data-display', 'closed');
+      }
+    }
+  };
+
+  const handleMoveToBeginning = () => {
+    if (rows.length > 1 && !isFirst()) {
+      if (ref.current && currentRow) {
+        const pos = rows.findIndex((r) => r.label === currentRow.label);
+        const copy = [...rows];
+        copy.splice(pos, 1);
+        copy.unshift(currentRow);
+        setRows(copy);
+        ref.current.setAttribute('data-display', 'closed');
+      }
+    }
+  };
+
+  const handleMoveToEnd = () => {
+    if (rows.length > 1 && !isLast()) {
+      if (ref.current && currentRow) {
+        const copy = [...rows];
+        const pos = rows.findIndex((r) => r.label === currentRow.label);
+        copy.splice(pos, 1);
+        copy.push(currentRow);
+        setRows(copy);
+        ref.current.setAttribute('data-display', 'closed');
+      }
+    }
+  };
+
+  const isFirst = () => {
+    if (currentRow) {
+      const pos = rows.findIndex((r) => r.label === currentRow.label);
+      return pos === 0 ? true : false;
+    }
+    return false;
+  };
+
+  const isLast = () => {
+    if (currentRow) {
+      const pos = rows.findIndex((r) => r.label === currentRow.label);
+      return pos === rows.length - 1 ? true : false;
+    }
+    return false;
+  };
+
+  const moveToFilters = () => {
+    if (ref.current && currentRow) {
+      const copy = [...rows];
+      const pos = rows.findIndex((r) => r.label === currentRow.label);
+      copy.splice(pos, 1);
+      setRows(copy);
+
+      const newFilter: FilterType<T> = {
+        label: currentRow.label,
       };
+      setFilters([...filters, newFilter]);
+      ref.current.setAttribute('data-display', 'closed');
+    }
+  };
+
+  const moveToValues = () => {
+    if (ref.current && currentRow) {
+      const copy = [...rows];
+      const pos = rows.findIndex((r) => r.label === currentRow.label);
+      copy.splice(pos, 1);
+      setRows(copy);
+      const newValue: ValueType<T> = {
+        label: currentRow.label,
+        direction: currentRow.direction,
+        aggregator: 'SUM',
+      };
+      setValues([...values, newValue]);
+
+      ref.current.setAttribute('data-display', 'closed');
+    }
+  };
+
+  const moveToColumns = () => {
+    if (ref.current && currentRow) {
+      const copy = [...rows];
+      const pos = rows.findIndex((r) => r.label === currentRow.label);
+      copy.splice(pos, 1);
+      setRows(copy);
+      const newColumn: Column<T> = {
+        label: currentRow.label,
+        direction: currentRow.direction,
+        inclusions: [],
+      };
+      setColumns([...columns, newColumn]);
+
+      ref.current.setAttribute('data-display', 'closed');
     }
   };
 
@@ -100,7 +240,7 @@ const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
       <div
         data-testid="filtered-rows"
         query-id="filtered-rows"
-        className="border rounded-md shadow-md p-1 min-h-[150px] max-h-[200px] overflow-y-auto"
+        className="relative border rounded-md shadow-md p-1 min-h-[150px] max-h-[200px] overflow-y-auto"
         id="filtered-rows"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -113,13 +253,11 @@ const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
             onDragStart={(e) => handleDragStart(e, r)}
             onDragLeave={(e) => handleDragLeave(e)}
             key={`row-${i}`}
-            className="flex justify-between draggable-item border rounded-md shadow-sm px-2 mb-1"
+            onClick={(e) => handleShowOptions(e, r)}
+            className="flex justify-between draggable-item border rounded-md shadow-sm px-2 mb-1 cursor-pointer"
           >
             <span>{String(r.label)}</span>
-            <span
-              className="flex justify-center items-center"
-              onClick={(e) => handleShowOptions(e, r)}
-            >
+            <span className="flex justify-center items-center">
               <ChevronDown height={10} width={10} stroke="#000" />
             </span>
           </div>
@@ -128,10 +266,73 @@ const Rows = <T,>({ rows, setRows }: RowProps<T>) => {
       <div
         ref={ref}
         data-display="closed"
-        className="absolute data-[display=closed]:animate-dissapear data-[display=open]:animate-appear
-        border rounded-lg shadow-md px-2 py-1 bg-white"
+        query-id="rows-context-menu"
+        className="bg-white absolute data-[display=closed]:animate-dissapear data-[display=open]:animate-appear
+        border rounded-lg shadow-md px-2 py-1 opacity-100"
       >
-        <div className="cursor-pointer">Remove Field</div>
+        <div
+          query-id="rows-move-up"
+          onClick={handleMoveUp}
+          className={`${rows.length > 1 && !isFirst() ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move Up
+        </div>
+        <div
+          query-id="rows-move-down"
+          onClick={handleMoveDown}
+          className={`${rows.length > 1 && !isLast() ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move Down
+        </div>
+        <div
+          query-id="rows-move-to-beginning"
+          onClick={handleMoveToBeginning}
+          className={`${rows.length > 1 && !isFirst() ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move to Beginning
+        </div>
+        <div
+          query-id="rows-move-to-end"
+          onClick={handleMoveToEnd}
+          className={`${rows.length > 1 && !isLast() ? 'hover:bg-slate-100 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+        >
+          Move to End
+        </div>
+        <div>
+          <hr />
+        </div>
+        <div
+          query-id="rows-move-to-filters"
+          onClick={moveToFilters}
+          className="cursor-pointer hover:bg-slate-100"
+        >
+          Move to Filters
+        </div>
+        <div
+          query-id="rows-move-to-columns"
+          onClick={moveToColumns}
+          className="cursor-pointer hover:bg-slate-100"
+        >
+          Move to Columns
+        </div>
+        <div
+          query-id="rows-move-to-values"
+          onClick={moveToValues}
+          className="cursor-pointer hover:bg-slate-100"
+        >
+          Move to Values
+        </div>
+        <div>
+          <hr />
+        </div>
+        <div
+          query-id="rows-remove"
+          onClick={handleRemove}
+          className="cursor-pointer hover:bg-slate-100"
+        >
+          Remove Field
+        </div>
+        <div className="cursor-pointer hover:bg-slate-100">Field Settings</div>
       </div>
     </div>
   );
