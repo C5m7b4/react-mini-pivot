@@ -6,6 +6,12 @@ export interface AppContextType {
   setActiveTool: (tool: ToolProps) => void;
   liveMode: boolean;
   setLiveMode: (liveMode: boolean) => void;
+  reportTools: ToolProps[];
+  setReportTools: (tools: ToolProps[]) => void;
+  headerTools: ToolProps[];
+  setHeaderTools: (tools: ToolProps[]) => void;
+  footerTools: ToolProps[];
+  setFooterTools: (tools: ToolProps[]) => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -36,6 +42,9 @@ const AppProvider = ({ children }: AppProviderProps) => {
     paddingRight: 0,
   });
   const [liveMode, setLiveMode] = useState<boolean>(false);
+  const [headerTools, setHeaderTools] = useState<ToolProps[]>([]);
+  const [footerTools, setFooterTools] = useState<ToolProps[]>([]);
+  const [reportTools, setReportTools] = useState<ToolProps[]>([]);
 
   return (
     <AppContext.Provider
@@ -44,6 +53,12 @@ const AppProvider = ({ children }: AppProviderProps) => {
         setActiveTool,
         liveMode,
         setLiveMode,
+        headerTools,
+        setHeaderTools,
+        reportTools,
+        setReportTools,
+        footerTools,
+        setFooterTools,
       }}
     >
       {children}
